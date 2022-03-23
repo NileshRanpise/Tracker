@@ -13,6 +13,7 @@ const User = require('../models/users');
                 console.log('Unable to create new user')
                 res.json({message: 'Unable to create new user'})
             }
+
             User.create({ name, email, password: hash }).then(() => {
                 res.status(201).json({message: 'Successfuly create new user'})
             }).catch(err => {
@@ -28,15 +29,19 @@ function generateAccessToken(id) {
 }
 
 const login = (req, res) => {
+
     const { email, password } = req.body;
     console.log(password);
+
     User.findAll({ where : { email }}).then(user => {
+
         if(user.length > 0){
             bcrypt.compare(password, user[0].password, function(err, response) {
                 if (err){
                 console.log(err)
                 return res.json({success: false, message: 'Something went wrong'})
                 }
+
                 if (response){
                     console.log(JSON.stringify(user))
                     const jwttoken = generateAccessToken(user[0].id);
